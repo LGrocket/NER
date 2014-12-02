@@ -5,7 +5,7 @@ def read_file(filename):
     word \t tag
     word \t tag
     [[blank line separates sentences]]
-    
+
     This function reads the file and returns a list of sentences.  each
     sentence is a pair (tokens, tags), each of which is a list of strings of
     the same length.
@@ -30,6 +30,12 @@ def extract_features_for_sentence1(tokens):
     for t in range(N):
         w = clean_str(tokens[t])
         feats_per_position[t].add("word=%s" % w)
+        feats_per_position[t].add("affix_1=%s" % w[0])
+        feats_per_position[t].add("affix_2=%s" % w[0:2])
+        feats_per_position[t].add("affix_3=%s" % w[0:3])
+        feats_per_position[t].add("suffix_1=%s" % w[-1:])
+        feats_per_position[t].add("suffix_2=%s" % w[-2:])
+        feats_per_position[t].add("suffix_3=%s" % w[-3:])
     return feats_per_position
 
 extract_features_for_sentence = extract_features_for_sentence1
