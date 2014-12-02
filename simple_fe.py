@@ -1,4 +1,5 @@
 import string
+import nltk
 
 
 name_list = []
@@ -49,6 +50,7 @@ def clean_str(s):
 def extract_features_for_sentence1(tokens):
     N = len(tokens)
     feats_per_position = [set() for i in range(N)]
+    pos = nltk.pos_tag(tokens) #Store tuples of POS and token as array
     for t in range(N):
         w = clean_str(tokens[t])
         feats_per_position[t].add("word=%s" % w)
@@ -59,17 +61,20 @@ def extract_features_for_sentence1(tokens):
         feats_per_position[t].add("suffix_1=%s" % w[-1:])
         feats_per_position[t].add("suffix_2=%s" % w[-2:])
         feats_per_position[t].add("suffix_3=%s" % w[-3:])
+        feats_per_position[t].add("pos_tag=%s" % pos[t][1])
+        feats_per_position[t].add("word_shape=%s" % w)
         # Positional offset -1
         if (t > 0):
             w = clean_str(tokens[t-1])
+            feats_per_position[t].add("word_position_-1=%s" % w)
             feats_per_position[t].add("affix_1_special_char_position_-1=%s" % "T" if (w[0] == "@" or w[0] == "#") else "F")
-            #word_shape
-            w = word_shape_parse(tokens[t-1])
-            feats_per_position[t].add("word_shape_positional_-1=%s" % w)
+            feats_per_position[t].add("word_shape_positional_-1=%s" % word_shape_parse(w))
         # Positional offset +1
         if (t < N-1):
-            wPost = clean_str(tokens[t+1])
+            w = clean_str(tokens[t+1])
+            feats_per_position[t].add("word_position_+1=%s" % w)
             feats_per_position[t].add("affix_1_special_char_position_+1=%s" % "T" if (w[0] == "@" or w[0] == "#") else "F")
+<<<<<<< HEAD
             #word_shape
             w = word_shape_parse(tokens[t+1])
             feats_per_position[t].add("word_shape_positional_+1=%s" % w)
@@ -79,6 +84,9 @@ def extract_features_for_sentence1(tokens):
         
         #name check
         feats_per_position[t].add(check_for_name(tokens[t]))
+=======
+            feats_per_position[t].add("word_shape_positional_+1=%s" % word_shape_parse(w))
+>>>>>>> origin/master
     return feats_per_position
 
 extract_features_for_sentence = extract_features_for_sentence1
