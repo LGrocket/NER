@@ -1,4 +1,5 @@
 import string
+import nltk
 
 def read_file(filename):
     r"""Assume the file is the format
@@ -27,6 +28,7 @@ def clean_str(s):
 def extract_features_for_sentence1(tokens):
     N = len(tokens)
     feats_per_position = [set() for i in range(N)]
+    pos = nltk.pos_tag(tokens) #Store tuples of POS and token as array
     for t in range(N):
         w = clean_str(tokens[t])
         feats_per_position[t].add("word=%s" % w)
@@ -37,6 +39,7 @@ def extract_features_for_sentence1(tokens):
         feats_per_position[t].add("suffix_1=%s" % w[-1:])
         feats_per_position[t].add("suffix_2=%s" % w[-2:])
         feats_per_position[t].add("suffix_3=%s" % w[-3:])
+        feats_per_position[t].add("pos_tag=%s" % pos[t][1])
         # Positional offset -1
         if (t > 0):
             w = clean_str(tokens[t-1])
