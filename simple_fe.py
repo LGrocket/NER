@@ -36,6 +36,20 @@ def extract_features_for_sentence1(tokens):
         feats_per_position[t].add("suffix_1=%s" % w[-1:])
         feats_per_position[t].add("suffix_2=%s" % w[-2:])
         feats_per_position[t].add("suffix_3=%s" % w[-3:])
+        w = ""
+        for l in range(len(tokens[t])):
+            if not tokens[t][l].isalpha():
+                if len(w)-1 >= 0 and w[len(w)-1] != 'D':
+                    w.append("D")
+            elif tokens[t][l].isupper():
+                if len(w)-1 >= 0 and w[len(w)-1] != 'A':
+                    w.append("A")
+            else:
+                if len(w)-1 >= 0 and w[len(w)-1] != 'a':
+                    w.append("a")
+        
+        feats_per_position[t].add("word shape=%s" % w)
+
     return feats_per_position
 
 extract_features_for_sentence = extract_features_for_sentence1
