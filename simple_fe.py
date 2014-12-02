@@ -31,11 +31,20 @@ def extract_features_for_sentence1(tokens):
         w = clean_str(tokens[t])
         feats_per_position[t].add("word=%s" % w)
         feats_per_position[t].add("affix_1=%s" % w[0])
+        feats_per_position[t].add("affix_1_special_char=%s" % "T" if (w[0] == "@" or w[0] == "#") else "F")
         feats_per_position[t].add("affix_2=%s" % w[0:2])
         feats_per_position[t].add("affix_3=%s" % w[0:3])
         feats_per_position[t].add("suffix_1=%s" % w[-1:])
         feats_per_position[t].add("suffix_2=%s" % w[-2:])
         feats_per_position[t].add("suffix_3=%s" % w[-3:])
+        # Positional offset -1
+        if (t > 0):
+            w = clean_str(tokens[t-1])
+            feats_per_position[t].add("affix_1_special_char_position_-1=%s" % "T" if (w[0] == "@" or w[0] == "#") else "F")
+        # Positional offset +1
+        if (t < N-1):
+            wPost = clean_str(tokens[t+1])
+            feats_per_position[t].add("affix_1_special_char_position_+1=%s" % "T" if (w[0] == "@" or w[0] == "#") else "F")
     return feats_per_position
 
 extract_features_for_sentence = extract_features_for_sentence1
@@ -53,4 +62,5 @@ def extract_features_for_file(input_file, output_file):
             print>>output_fileobj, ""
 
 extract_features_for_file("train.txt", "train.feats")
+#extract_features_for_file("train_dev_concat.txt", "train.feats")
 extract_features_for_file("dev.txt", "dev.feats")
