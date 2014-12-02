@@ -41,27 +41,36 @@ def extract_features_for_sentence1(tokens):
         if (t > 0):
             w = clean_str(tokens[t-1])
             feats_per_position[t].add("affix_1_special_char_position_-1=%s" % "T" if (w[0] == "@" or w[0] == "#") else "F")
+            #word_shape
+            w = word_shape_parse(tokens[t-1])
+            feats_per_position[t].add("word_shape_positional_-1=%s" % w)
         # Positional offset +1
         if (t < N-1):
             wPost = clean_str(tokens[t+1])
             feats_per_position[t].add("affix_1_special_char_position_+1=%s" % "T" if (w[0] == "@" or w[0] == "#") else "F")
+            #word_shape
+            w = word_shape_parse(tokens[t+1])
+            feats_per_position[t].add("word_shape_positional_+1=%s" % w)
         # Wordshape
-        w = ""
-        for l in range(len(tokens[t])):
-            if not tokens[t][l].isalpha():
-                if len(w)-1 >= 0 and w[len(w)-1] != 'D':
-                    w.append("D")
-            elif tokens[t][l].isupper():
-                if len(w)-1 >= 0 and w[len(w)-1] != 'A':
-                    w.append("A")
-            else:
-                if len(w)-1 >= 0 and w[len(w)-1] != 'a':
-                    w.append("a")
+        w = word_shape_parse(tokens[t])
         feats_per_position[t].add("word_shape=%s" % w)
-
     return feats_per_position
 
 extract_features_for_sentence = extract_features_for_sentence1
+
+def word_shape_parse(token):
+    w = ""
+    for l in range(len(token)):
+        if not token[l].isalpha():
+            if len(w) == 0 or w[len(w)-1] != 'D':
+                w+="D"
+        elif token[l].isupper():
+            if len(w) == 0 or w[len(w)-1] != 'A':
+                w+="A"
+        else:
+            if len(w) == 0 or w[len(w)-1] != 'a':
+                w+="a"
+    return w
 
 def extract_features_for_file(input_file, output_file):
     """This runs the feature extractor on input_file, and saves the output to
