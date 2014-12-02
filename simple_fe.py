@@ -69,6 +69,7 @@ def extract_features_for_sentence1(tokens):
         feats_per_position[t].add("pos_tag=%s" % pos[t][1])
         feats_per_position[t].add("ne_tag=%s" % "T" if (w in sentence_entities) else "F")
         feats_per_position[t].add("word_shape=%s" % word_shape_parse(w))
+        feats_per_position[t].add(check_for_name(w))
         # Positional offset -1
         if (t > 0):
             w = clean_str(tokens[t-1])
@@ -80,19 +81,7 @@ def extract_features_for_sentence1(tokens):
             w = clean_str(tokens[t+1])
             feats_per_position[t].add("word_position_+1=%s" % w)
             feats_per_position[t].add("affix_1_special_char_position_+1=%s" % "T" if (w[0] == "@" or w[0] == "#") else "F")
-<<<<<<< HEAD
-            #word_shape
-            w = word_shape_parse(tokens[t+1])
-            feats_per_position[t].add("word_shape_positional_+1=%s" % w)
-        # Wordshape
-        w = word_shape_parse(tokens[t])
-        feats_per_position[t].add("word_shape=%s" % w)
-        
-        #name check
-        feats_per_position[t].add(check_for_name(tokens[t]))
-=======
             feats_per_position[t].add("word_shape_positional_+1=%s" % word_shape_parse(w))
->>>>>>> origin/master
     return feats_per_position
 
 extract_features_for_sentence = extract_features_for_sentence1
@@ -117,7 +106,7 @@ def check_for_name(token):
         w = "name_list=T"
     else:
         w = "name_list=F"
-    return w 
+    return w
 
 def extract_features_for_file(input_file, output_file):
     """This runs the feature extractor on input_file, and saves the output to
