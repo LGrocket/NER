@@ -29,6 +29,11 @@ def extract_features_for_sentence1(tokens):
     N = len(tokens)
     feats_per_position = [set() for i in range(N)]
     pos = nltk.pos_tag(tokens) #Store tuples of POS and token as array
+    nltk_entities = nltk.chunk.ne_chunk(pos, binary=True)
+    sentence_entities = []
+    for i in nltk_entities.subtrees(filter=lambda x: x.node == 'NE'):
+        for w in i.leaves():
+            sentence_entities += w
     for t in range(N):
         w = clean_str(tokens[t])
         feats_per_position[t].add("word=%s" % w)
@@ -40,7 +45,8 @@ def extract_features_for_sentence1(tokens):
         feats_per_position[t].add("suffix_2=%s" % w[-2:])
         feats_per_position[t].add("suffix_3=%s" % w[-3:])
         feats_per_position[t].add("pos_tag=%s" % pos[t][1])
-        feats_per_position[t].add("word_shape=%s" % w)
+        feats_per_position[t].add("ne_tag=%s" % "T" if (w in sentence_entities) else "F")
+        feats_per_position[t].add("word_shape=%s" % word_shape_parse(w))
         # Positional offset -1
         if (t > 0):
             w = clean_str(tokens[t-1])
