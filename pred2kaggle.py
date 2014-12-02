@@ -1,5 +1,7 @@
+# Updated 2014-12-01
 import sys
-from tageval import  convert_bio_to_spans
+import tageval
+#from tageval import  convert_bio_to_spans
 
 def getTag(line):
      if line.strip():
@@ -10,19 +12,19 @@ def getTag(line):
     
 def main():
     owplFile = sys.argv[1]
-    lines = open(owplFile).readlines()
-    tags = map(getTag,lines)
-    chunks = convert_bio_to_spans(tags)
     print "Id,Prediction"
-    count = 0
     sys.stdout.write("0,")
-    for c in chunks:
-        sys.stdout.write(" %s-%d-%d" % c)
+    toktags = tageval.read_tags_file(owplFile)
+    
+    start = 0
+    for tags in toktags:
+         spans = tageval.convert_bio_to_spans(tags)
+         for c in spans:
+              sys.stdout.write(" %s-%d-%d" % (c[0],c[1] + start,c[2] + start))
+         start = start + len(tags)
     sys.stdout.write("\n")    
 
 
-#            fields = line.rstrip().split("\t")
-#            token = fields[0]
-#            return fields[1]
+
 if __name__ == "__main__":
     main()
