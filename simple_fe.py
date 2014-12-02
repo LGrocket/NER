@@ -40,23 +40,19 @@ def extract_features_for_sentence1(tokens):
         feats_per_position[t].add("suffix_2=%s" % w[-2:])
         feats_per_position[t].add("suffix_3=%s" % w[-3:])
         feats_per_position[t].add("pos_tag=%s" % pos[t][1])
+        feats_per_position[t].add("word_shape=%s" % w)
         # Positional offset -1
         if (t > 0):
             w = clean_str(tokens[t-1])
+            feats_per_position[t].add("word_position_-1=%s" % w)
             feats_per_position[t].add("affix_1_special_char_position_-1=%s" % "T" if (w[0] == "@" or w[0] == "#") else "F")
-            #word_shape
-            w = word_shape_parse(tokens[t-1])
-            feats_per_position[t].add("word_shape_positional_-1=%s" % w)
+            feats_per_position[t].add("word_shape_positional_-1=%s" % word_shape_parse(w))
         # Positional offset +1
         if (t < N-1):
-            wPost = clean_str(tokens[t+1])
+            w = clean_str(tokens[t+1])
+            feats_per_position[t].add("word_position_+1=%s" % w)
             feats_per_position[t].add("affix_1_special_char_position_+1=%s" % "T" if (w[0] == "@" or w[0] == "#") else "F")
-            #word_shape
-            w = word_shape_parse(tokens[t+1])
-            feats_per_position[t].add("word_shape_positional_+1=%s" % w)
-        # Wordshape
-        w = word_shape_parse(tokens[t])
-        feats_per_position[t].add("word_shape=%s" % w)
+            feats_per_position[t].add("word_shape_positional_+1=%s" % word_shape_parse(w))
     return feats_per_position
 
 extract_features_for_sentence = extract_features_for_sentence1
