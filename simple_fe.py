@@ -1,5 +1,8 @@
 import string
 
+
+name_list = []
+
 def read_file(filename):
     r"""Assume the file is the format
     word \t tag
@@ -18,6 +21,25 @@ def read_file(filename):
         tokens = [tok for tok,tag in pairs]
         tags = [tag for tok,tag in pairs]
         ret.append( (tokens,tags) )
+    return ret
+
+def read_names(filename):
+    r"""Assume the file is the format
+    word \t tag
+    word \t tag
+    [[blank line separates sentences]]
+
+    This function reads the file and returns a list of sentences.  each
+    sentence is a pair (tokens, tags), each of which is a list of strings of
+    the same length.
+    """
+    sentences = open(filename).read().strip().split("\n\n")
+    ret = []
+    for sent in sentences:
+        lines = sent.split("\n")
+        pairs = [L.split() for L in lines]
+        for tok,tag,x,y in pairs:
+            ret.append(tok)
     return ret
 
 def clean_str(s):
@@ -54,6 +76,9 @@ def extract_features_for_sentence1(tokens):
         # Wordshape
         w = word_shape_parse(tokens[t])
         feats_per_position[t].add("word_shape=%s" % w)
+        
+        #name check
+        feats_per_position[t].add(check_for_name(tokens[t]))
     return feats_per_position
 
 extract_features_for_sentence = extract_features_for_sentence1
@@ -72,6 +97,14 @@ def word_shape_parse(token):
                 w+="a"
     return w
 
+def check_for_name(token):
+    count = name_list.count(token.upper())
+    if count>0:
+        w = "name_list=T"
+    else:
+        w = "name_list=F"
+    return w 
+
 def extract_features_for_file(input_file, output_file):
     """This runs the feature extractor on input_file, and saves the output to
     output_file."""
@@ -84,6 +117,7 @@ def extract_features_for_file(input_file, output_file):
                 print>>output_fileobj, "%s\t%s" % (goldtags[t], feats_tabsep)
             print>>output_fileobj, ""
 
+name_list = read_names("first_names.txt")
 extract_features_for_file("train.txt", "train.feats")
 #extract_features_for_file("train_dev_concat.txt", "train.feats")
 extract_features_for_file("dev.txt", "dev.feats")
